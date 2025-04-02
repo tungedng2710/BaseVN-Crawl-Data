@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import json
 from tqdm import tqdm
+import numpy as np
 
 def get_data(url: str = "https://workflow.base.vn/extapi/v1/workflow/jobs", 
              payload: dict = {}):
@@ -24,22 +25,23 @@ if __name__ == "__main__":
     payload = {
         "access_token": f"{access_token}",
         "id": "13080",
+        "created_from": "2/4/2025",
+        "created_to": "2/4/2025"
     }
     data = get_data(payload=payload)
     if not os.path.exists("outputs"):
         os.makedirs("outputs")
 
+    full_values = []
     for idx, job in tqdm(enumerate(data["jobs"])):
-        form = job["form"]
-        form = data["jobs"][0]['form']
-        ids, names, values = [], [], []
+        form = job["form_origin"]
+        headers, values = [], []
         for item in form:
             # print(item)
-            id = item['id'] 
             name = item['name']
             value = item['value']
-            ids.append(id)
-            names.append(name)
+            headers.append(name)
             values.append(value)
-        df = pd.DataFrame({'id': ids, 'name': names, 'value': values})
-        df.to_excel(f'outputs/output{idx}.xlsx', index=False)
+        full_values.append(values)
+    df = pd.DataFrame(full_values, columns=headers)
+    df.to_excel(f'outputs/full_output.xlsx', index=False)

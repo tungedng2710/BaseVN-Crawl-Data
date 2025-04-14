@@ -36,6 +36,9 @@ def save_dict_to_json(data_dict, filename):
 
 if __name__ == "__main__":
     access_token = open("token.txt", "r").read()
+    output_folder_path = "outputs"
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
 
     payload = {
         "access_token": f"{access_token}",
